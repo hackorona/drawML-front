@@ -2,7 +2,8 @@ import React from 'react';
 import AppContext from '../context/AppContext';
 
 import CanvasDraw from "react-canvas-draw";
-import "./Board.css";
+import Button from 'react-bootstrap/Button';
+
 
 const ROOM_ID = 'roomId'
 const JOIN = 'join'
@@ -22,15 +23,9 @@ class Board extends React.Component {
 
     state = {
         displayDrawingTable: false,
-        start: false
+        definition: null
     }
 
-    displayQuestion = () => {
-        this.setState({
-            displayDrawingTable: !this.state.displayDrawingTable || !this.state.start,
-        })
-    }
-    
     componentWillMount() {
         this.context.socket.on('connect', () => {
             console.log(`${this.context.playerName} Connected`);
@@ -39,62 +34,70 @@ class Board extends React.Component {
 
          this.context.socket.on(CHALLENGE, (data) => {
             console.log(`The challenge is ${data.definition}`);
+            this.setState({ definition: data.definition })
          })
     }
 
     startChallenge = () => {
         this.context.socket.emit(START, { roomId: this.context.roomId });
+        this.setState({
+            displayDrawingTable: !this.state.displayDrawingTable 
+        })
     }
    
 
     render(){
-        let drawingBoard = null;
-        if ( this.state.displayDrawingTable ) {
-            drawingBoard = (
-                <div className="App">
-                <h1>React-Canvas-Draw</h1>
-                <h3>A simple yet powerful canvas-drawing component for React</h3>
-                <iframe
-                  title="GitHub link"
-                  src="https://ghbtns.com/github-btn.html?user=embiem&repo=react-canvas-draw&type=star&count=true"
-                  frameborder="0"
-                  scrolling="0"
-                  width="160px"
-                  height="30px"
-                />
-               
-                <CanvasDraw
-                  style={{
-                    boxShadow:
-                      "0 13px 27px -5px rgba(50, 50, 93, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3)",
-                     
-
-                  } } canvasWidth={1200} canvasHeight={500} lazyRadius = {0} brushRadius = {2}
-                />
-                <p>
-                  Like what you see? Play around in{" "}
-                  <a href="https://codesandbox.io/s/6lv410914w">this CodeSandbox</a> & see
-                  some more{" "}
-                  <a href="https://embiem.github.io/react-canvas-draw/">Advanced Demos</a>
-                  !
-                </p>
-              </div>
-
-
-            );
-
-        }
-
-
+        
         return(
             <AppContext.Consumer>
                 {
                     context => 
                         (
                         <>
-                            <h1>Welcome to room {context.roomId}</h1>
-                            <button onClick={this.startChallenge, this.displayQuestion}>Start</button>
-                            {drawingBoard}
+                            <h1>Hello {context.playerName}, Welcome to room {context.roomId}</h1>
+                            { this.state.definition && <h3>Draw { this.state.definition }</h3> }
+                            <button onClick={this.startChallenge}>Start</button>
+                            
+                            {this.state.displayDrawingTable && 
+                                <div className="App">
+                                    <Button
+                                        onClick={() => {
+                                        console.log(JSON.parse(this.saveableCanvas.getSaveData()))
+                                        
+                                        }}
+                                    >
+                                        Save
+                                    </Button>
+                                    <Button
+                                        onClick={() => {
+                                        this.saveableCanvas.clear();
+                                        }}
+                                    >
+                                        Clear
+                                    </Button>
+                                    <Button
+                                        onClick={() => {
+                                        this.saveableCanvas.undo();
+                                        }}
+                                    >
+                                        Undo
+                                    </Button>
+
+                                    {/* <div className='drawContainer'> */}
+                                        <CanvasDraw style={{ boxShadow: "0 13px 27px -5px rgba(50, 50, 93, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3)", width: "80%", margin: "auto auto" } }
+                                                    canvasWidth={400}
+                                                    canvasHeight={400} 
+                                                    lazyRadius = {0} 
+                                                    brushRadius = {2}
+                                                    ref={canvasDraw => (this.saveableCanvas = canvasDraw)}
+                                                    
+
+                                        />
+                                    {/* </div> */}
+                                     
+                                </div>
+                                
+                            } 
                         </>
                     )
                 }

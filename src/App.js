@@ -5,6 +5,8 @@ import Setup from './components/Setup';
 import { AppContextProvider } from './context/AppContext';
 import AppContext from './context/AppContext';
 import './App.css';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 function App() {
   return (
