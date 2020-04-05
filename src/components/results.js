@@ -2,7 +2,9 @@ import React from 'react';
 
 import AppContext from '../context/AppContext';
 import CanvasDraw from "react-canvas-draw";
-
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 export default function Results(props) {
     return (
         <AppContext.Consumer>

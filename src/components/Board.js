@@ -1,6 +1,6 @@
 import React from 'react';
 import AppContext from '../context/AppContext';
-// import Results from './results';
+
 import CanvasDraw from "react-canvas-draw";
 import Button from 'react-bootstrap/Button';
 import { debounce } from 'lodash';
@@ -45,6 +45,8 @@ class Board extends React.Component {
 
     startChallenge = () => {
         this.context.socket.emit(START, { roomId: this.context.roomId });
+        this.saveableCanvas.clear();
+
     }
 
     rematch = () => {
@@ -74,8 +76,14 @@ class Board extends React.Component {
                         <>
                             <h1>Hello {context.playerName}, Welcome to room {context.roomId}</h1>
                             { this.state.definition && <h3>Draw { this.state.definition }</h3> }
-                            {/* {context.winner && <Results rematch={ this.rematch } drawings={ this.state.drawings }/>} */}
-                            
+                            { this.state.winner && 
+                                <>
+                                    <h3>Player {this.state.winner} won!!</h3>
+                                    <button onClick={ this.rematch }>Rematch</button>
+                                </>
+                            }
+                                                        {/* {context.winner && <Results rematch={ this.rematch } drawings={ this.state.drawings }/>} */}
+
 
                             <button onClick={this.startChallenge}>Start / Change definition </button>
                              
@@ -106,7 +114,7 @@ class Board extends React.Component {
                                                 canvasWidth={this.state.size}
                                                 canvasHeight={this.state.size} 
                                                 lazyRadius = {0} 
-                                                brushRadius = {7}
+                                                brushRadius = {2}
                                                 ref={canvasDraw => (this.saveableCanvas = canvasDraw)}
                                                 onChange={this.sendDraw}
                                                 
