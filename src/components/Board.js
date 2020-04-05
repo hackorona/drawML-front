@@ -39,6 +39,7 @@ class Board extends React.Component {
          this.context.socket.on(GAME_OVER, (data) => {
             console.log(`Game is over, The winner is ${data.winner}`);
             this.setState({ winner: data.winner });
+            window.alert('Nice');
             
          });
     }
